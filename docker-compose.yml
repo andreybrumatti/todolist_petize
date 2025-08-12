@@ -3,11 +3,11 @@ version: '3.8'
 services:
   mysql:
     image: mysql:8.0
-    container_name: mysql-container
+    container_name: mysql_container
     restart: always
     environment:
       MYSQL_DATABASE: petize_test_db
-      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_ROOT_PASSWORD: admin123
       MYSQL_USER: petize_app
       MYSQL_PASSWORD: admin123
     ports:
@@ -17,11 +17,13 @@ services:
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    container_name: phpmyadmin-container
+    container_name: phpmyadmin_container
     restart: always
     environment:
       PMA_HOST: mysql
-      MYSQL_ROOT_PASSWORD: 123456
+      PMA_USER: petize_app
+      PMA_PASSWORD: admin123
+      MYSQL_ROOT_PASSWORD: admin123
     ports:
       - "8080:80"
 
