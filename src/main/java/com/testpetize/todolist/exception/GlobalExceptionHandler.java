@@ -6,8 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 import java.time.ZonedDateTime;
 import java.util.HashMap;
@@ -21,9 +23,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleRuntimeException(RuntimeException e) {
         String message = e.getMessage();
 
-        if (message.contains("cannot") || message.contains("required")) {
-            return ResponseEntity.badRequest().body(Map.of("erro", message));
-        } else if (message.contains("not found")) {
+        if (message.contains("not found")) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("erro", message));
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("erro", message));
@@ -67,6 +67,17 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler({MissingServletRequestPartException.class, MissingServletRequestParameterException.class})
+    public ResponseEntity<Map<String, Object>> handleMissingPartException(Exception ex) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("status", HttpStatus.BAD_REQUEST.value());
+        body.put("error", "Bad Request");
+        body.put("message", "Required file part is missing or empty");
+        body.put("timestamp", ZonedDateTime.now());
+
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(TaskException.class)
     public ResponseEntity<Map<String, Object>> handleTaskException(TaskException ex) {
         Map<String, Object> body = new LinkedHashMap<>();
@@ -80,6 +91,17 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UsersException.class)
     public ResponseEntity<Map<String, Object>> handleUserException(UsersException ex) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("status", HttpStatus.BAD_REQUEST.value());
+        body.put("error", "Bad Request");
+        body.put("message", ex.getMessage());
+        body.put("timestamp", ZonedDateTime.now());
+
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AttachmentException.class)
+    public ResponseEntity<Map<String, Object>> handleAttachmentException(AttachmentException ex) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("status", HttpStatus.BAD_REQUEST.value());
         body.put("error", "Bad Request");
