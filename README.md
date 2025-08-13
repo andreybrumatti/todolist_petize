@@ -113,10 +113,10 @@ http://localhost:8081/swagger-ui.html
 
 ### Recriar os containers limpando volumes:
     ㅤ
-    docker compose down -v && docker compose up -d
+    docker-compose down -v && docker-compose up -d
     ㅤ
 
 ### Ver logs:
     ㅤ
-    docker compose logs -f
+    docker-compose logs -f
     ㅤ
